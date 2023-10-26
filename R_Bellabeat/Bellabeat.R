@@ -95,13 +95,15 @@ weekday_data <- merge_daily_data %>%
     sleeptime = mean(totalminutesasleep),
     burnt_calories = mean(calories)
   )
-weekday_data <- weekday_data %>% 
-  pivot_longer(
-    cols = steps:burnt_calories,
-    names_to = "measurement",
-    values_to = "value"
-  )
-#test
+#weekday_data <- weekday_data %>% 
+  #pivot_longer(
+    #cols = steps:burnt_calories,
+    #names_to = "measurement",
+    #values_to = "value"
+ # )
+
+# Visualizing Data
+
 ggplot(weekday_data, aes(x = weekdays, y = value, fill = measurement)) + 
   geom_bar(stat="identity", position = "dodge", ylim = c(0,200)) +
   scale_fill_brewer(palette = "Set1")
@@ -110,16 +112,13 @@ ggplot(weekday_data, aes( x = value, y = weekdays)) +
   geom_bar(position="dodge", stat="identity") +
   facet_wrap(~ measurement)
 
-#ggplot(weekday_data, aes(x = weekdays, fill = c(steps, sleeptime, burnt_calories))) +
-  #geom_col(position = "dodge", colour = "black") +
-  #scale_fill_brewer(palette = "Pastel1")
 
 weekday_data %>%
-  ggplot(aes(x = factor(weekdays, levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")), y = sleeptime, color = weekdays)) +
-  geom_bar() + #(state = "identity", position = "jitter", alpha = 0.3 ) +
+  ggplot(aes(x = factor(weekdays, levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")), y = sleeptime, fill = weekdays)) +
+  geom_bar(stat = "identity", position = "dodge") +
   labs(title = "Minutes asleep throughout week") +
   ylab("Minutes asleep") +
-  #scale_x_discrete("Day", guide = guide_axis(angle = 90))
+  scale_x_discrete("Day", guide = guide_axis(angle = 45))
 
 ave_daily_data_by_id <- merge_daily_data %>% 
   group_by(id) %>% 
@@ -131,23 +130,6 @@ ave_daily_data_by_id <- merge_daily_data %>%
     
   )
 
-
-
-
-
-#x %>% 
-  #ggplot(mapping = aes(x = week_days, y = steps, fill = "#006699")) +
-  #geom_bar(stat = "identity")
-#x %>% 
-  #ggplot(aes(x = burncalories, y = steps, color = week_days)) +
-  #geom_point()
-
-#daily_life_data %>% 
-  #ggplot(mapping = aes(x = totalminutesasleep, y = calories)) +
-  #geom_point()
-#daily_life_data %>% 
-  #ggplot(mapping = aes(x = totalminutesasleep, y = totalsteps)) +
-  #geom_bar()
 
 
 
