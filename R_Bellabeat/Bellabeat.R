@@ -105,7 +105,7 @@ weekday_data <- merge_daily_data %>%
 # Visualizing Data
 
 ggplot(weekday_data, aes(x = weekdays, y = value, fill = measurement)) + 
-  geom_bar(stat="identity", position = "dodge", ylim = c(0,200)) +
+  geom_bar(stat="identity", position = "dodge", ylim = c(0,600)) +
   scale_fill_brewer(palette = "Set1")
 
 ggplot(weekday_data, aes( x = value, y = weekdays)) + 
@@ -113,12 +113,30 @@ ggplot(weekday_data, aes( x = value, y = weekdays)) +
   facet_wrap(~ measurement)
 
 
-weekday_data %>%
+sleepgp <- weekday_data %>%
   ggplot(aes(x = factor(weekdays, levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")), y = sleeptime, fill = weekdays)) +
   geom_bar(stat = "identity", position = "dodge") +
-  labs(title = "Minutes asleep throughout week") +
-  ylab("Minutes asleep") +
-  scale_x_discrete("Day", guide = guide_axis(angle = 45))
+  labs(title = "Average Sleep Time Throughout Week") +
+  ylab("minutes asleep") +
+  scale_x_discrete("Day", guide = guide_axis(angle = 45)) +
+  scale_fill_brewer(palette = "Accent")
+sleepgp + ylim(0,430)
+
+weekday_data %>%
+  ggplot(aes(x = factor(weekdays, levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")), y = steps, fill = weekdays)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Average Steps Throughout Week") +
+  ylab("steps") +
+  scale_x_discrete("Day", guide = guide_axis(angle = 45)) +
+  scale_fill_brewer(palette = "Accent")
+
+weekday_data %>%
+  ggplot(aes(x = factor(weekdays, levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")), y = burnt_calories, fill = weekdays)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Average Calories burnt Throughout Week") +
+  ylab("calories") +
+  scale_x_discrete("Day", guide = guide_axis(angle = 45)) +
+  scale_fill_brewer(palette = "Accent")
 
 ave_daily_data_by_id <- merge_daily_data %>% 
   group_by(id) %>% 
