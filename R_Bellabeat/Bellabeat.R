@@ -1,9 +1,12 @@
 # Loading Packeges
 install.packages("janitor")
+install.packages("ggpubr")
 library(tidyverse)
 library(lubridate)
 library(dplyr)
 library(janitor)
+library(ggplot2)
+library(ggpubr)
 
 # Importing Data
 
@@ -78,16 +81,25 @@ merge_daily_data <- merge(daily_activity, sleep, all.x = TRUE) %>%
 merge_daily_data <- merge_daily_data %>% 
   select(-c(trackerdistance, sleepday, totalsleeprecords))
   
-  #summary(merge_daily_data)
  
-  # Summarizing data
-  merge_daily_data %>% 
+# Summarizing data
+merge_daily_data %>% 
     select(-c(id, activityday)) %>% 
     summary()
   
-  
+
+# Transforming & Visualizing Data
+#finding trends base on weekdays
+
 merge_daily_data <- merge_daily_data %>% 
   mutate(weekdays = weekdays(activityday))
+
+#weekday_data <- weekday_data %>% 
+#pivot_longer(
+#cols = steps:burnt_calories,
+#names_to = "measurement",
+#values_to = "value"
+# )
 
 weekday_data <- merge_daily_data %>% 
   group_by(weekdays) %>% 
@@ -96,15 +108,6 @@ weekday_data <- merge_daily_data %>%
     sleeptime = mean(totalminutesasleep),
     burnt_calories = mean(calories)
   )
-#weekday_data <- weekday_data %>% 
-  #pivot_longer(
-    #cols = steps:burnt_calories,
-    #names_to = "measurement",
-    #values_to = "value"
- # )
-
-# Transforming & Visualizing Data
-
 weekday_data %>%
   ggplot(aes(x = factor(weekdays, levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")), y = sleeptime)) +
   geom_bar(stat = "identity", position = "dodge", width = 0.5, fill = "#154c79") +
@@ -128,19 +131,32 @@ weekday_data %>%
   labs(title = "Average Calories burnt Throughout Week") +
   ylab("calories") +
   scale_x_discrete("Day", guide = guide_axis(angle = 45)) 
-  
 
-ave_daily_data_by_id <- merge_daily_data %>% 
-  group_by(id) %>% 
-  summarize(
-    ave_calories = mean(calories),
-    ave_steps = mean(totalsteps),
-    ave_distance = mean(totaldistance),
-    ave_sleep = mean(totalminutesasleep),
+merge_daily_data %>%
+  ggplot(aes( x = totalsteps, y = calories))+
+  geom_jitter(alpha = 0.5)+
+  geom_rug(position = "jitter", size = 0.03)+
+  geom_smooth(size = 0.6, color = "red")+
+  stat_cor(method = "pearson", label.x = 20000, label.y = 2300) +
+  labs(title = "Daily steps vs. calories", x = "daily steps", y = "calories")+
+  theme_minimal()
+
+
+#ave_daily_data_by_id <- merge_daily_data %>% 
+  #group_by(id) %>% 
+  #summarize(
+    #ave_calories = mean(calories),
+    #ave_steps = mean(totalsteps),
+    #ave_distance = mean(totaldistance),
+    #ave_sleep = mean(totalminutesasleep),
     
-  )
+  #)
 
 
+merge_daily_data %>% 
+  ggplot(aes(x = totalsteps, y = calories)) +
+  geom_point() +
+  geom_smooth(method = lm)
 
 
 
