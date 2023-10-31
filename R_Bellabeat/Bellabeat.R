@@ -136,8 +136,7 @@ merge_daily_data %>%
   ggplot(aes( x = totalsteps, y = calories))+
   geom_jitter(alpha = 0.5)+
   geom_rug(position = "jitter", size = 0.03)+
-  geom_smooth(size = 0.6, color = "red")+
-  stat_cor(method = "pearson", label.x = 20000, label.y = 2300) +
+  geom_smooth(model = lm, size = 0.6, color = "red")+
   labs(title = "Daily steps vs. calories", x = "daily steps", y = "calories")+
   theme_minimal()
 
