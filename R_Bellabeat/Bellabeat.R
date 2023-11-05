@@ -1,12 +1,15 @@
 # Loading Packeges
 install.packages("janitor")
 install.packages("ggpubr")
+install.packages("magrittr")
 library(tidyverse)
 library(lubridate)
 library(dplyr)
 library(janitor)
 library(ggplot2)
 library(ggpubr)
+library(tidyr)
+library(magrittr)
 
 # Importing Data
 
@@ -75,11 +78,14 @@ clean_names(sleep)
 sleep <- rename_with(sleep, tolower)
 
 # Merging datasets
+sleep <- sleep %>% 
+  tidyr::separate_wider_delim(sleepday, " ", names = c("sleepday", "time"))
 
-merge_daily_data <- merge(daily_activity, sleep, all.x = TRUE) %>% 
+merge_daily_data <- merge(daily_activity, sleep, by.x = c("id", "activityday"), by.y = c("id", "sleepday")) %>% 
   drop_na()
+
 merge_daily_data <- merge_daily_data %>% 
-  select(-c(trackerdistance, sleepday, totalsleeprecords))
+  select(-c(trackerdistance, time, totalsleeprecords))
   
  
 # Summarizing data
