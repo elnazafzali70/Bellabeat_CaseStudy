@@ -140,28 +140,28 @@ weekday_data %>%
 
 merge_daily_data %>%
   ggplot(aes( x = totalsteps, y = calories))+
-  geom_jitter(alpha = 0.5)+
+  geom_jitter(alpha = 0.7)+
   geom_rug(position = "jitter", size = 0.03)+
-  geom_smooth(model = lm, size = 0.6, color = "red")+
+  geom_smooth(method = lm, size = 0.6, color = "red")+
   labs(title = "Daily steps vs. calories", x = "daily steps", y = "calories")+
   theme_minimal()
 
-
-#ave_daily_data_by_id <- merge_daily_data %>% 
-  #group_by(id) %>% 
-  #summarize(
-    #ave_calories = mean(calories),
-    #ave_steps = mean(totalsteps),
-    #ave_distance = mean(totaldistance),
-    #ave_sleep = mean(totalminutesasleep),
+ave_daily_data_by_id <- merge_daily_data %>% 
+  group_by(id) %>% 
+  summarize(
+    ave_calories = mean(calories),
+    ave_steps = mean(totalsteps),
+    ave_distance = mean(totaldistance),
+    ave_sleep = mean(totalminutesasleep),
     
-  #)
-
+  )
 
 merge_daily_data %>% 
-  ggplot(aes(x = totalsteps, y = calories)) +
-  geom_point() +
-  geom_smooth(method = lm)
+  ggplot(aes(totalsteps,calories,fill=totalsteps)) +
+  geom_boxplot() +
+  #facet_wrap(~distance)+
+  labs(title="Calories burned by Steps",x=NULL) +
+  theme(legend.position="none", text = element_text(size = 20),plot.title = element_text(hjust = 0.5))
 
 
 
