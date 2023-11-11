@@ -1,15 +1,15 @@
 # Loading Packeges
 install.packages("janitor")
-install.packages("ggpubr")
-install.packages("magrittr")
+#install.packages("ggpubr")
+#install.packages("magrittr")
 library(tidyverse)
 library(lubridate)
 library(dplyr)
 library(janitor)
 library(ggplot2)
-library(ggpubr)
+#library(ggpubr)
 library(tidyr)
-library(magrittr)
+#library(magrittr)
 
 # Importing Data
 
@@ -94,7 +94,7 @@ merge_daily_data %>%
     summary()
   
 
-# Transforming & Visualizing Data
+# Visualizing Data
 #finding trends base on weekdays
 
 merge_daily_data <- merge_daily_data %>% 
@@ -146,22 +146,69 @@ merge_daily_data %>%
   labs(title = "Daily steps vs. calories", x = "daily steps", y = "calories")+
   theme_minimal()
 
-ave_daily_data_by_id <- merge_daily_data %>% 
+data_by_id <- merge_daily_data %>% 
   group_by(id) %>% 
   summarize(
     ave_calories = mean(calories),
     ave_steps = mean(totalsteps),
     ave_distance = mean(totaldistance),
     ave_sleep = mean(totalminutesasleep),
+    num_day_used = n()
+    ) %>% 
+ 
+   mutate(
+    user_usage = case_when(
+    num_day_used >= 1 & num_day_used <= 10 ~ "low usage",
+    num_day_used >= 11 & num_day_used <= 20 ~ "Medium usage", 
+    num_day_used >= 21 & num_day_used <= 31 ~ "High usage", 
+  ))
+
+data_by_id %>% 
+  ggplot(aes(x = user_usage, y = ave_calories, fill = user_usage)) +
+  geom_boxplot() +
+  theme(legend.position = "none") +
+  labs(title = "Calories burned by User usage", x = NULL) +
+  theme(legend.position = "none", text = element_text(size = 10), plot.title = element_text(hjust = 0.5))
+
+
+data_by_usage <- data_by_id %>% 
+  group_by(user_usage) %>% 
+  summarize(
+    num_user = n(),
+    type_calories = mean(ave_calories)
+    
+  ) %>%
+  mutate(
+    total = sum(num_user),
+    percentage = scales::percent(num_user / total)
     
   )
 
-merge_daily_data %>% 
-  ggplot(aes(totalsteps,calories,fill=totalsteps)) +
-  geom_boxplot() +
+
+data_by_usage %>%
+  ggplot(aes(x = "", y = percentage, fill = user_usage)) +
+  geom_bar(stat = "identity", width = 1)+
+  coord_polar("y", start = 0) +
+  theme_minimal() +
+  theme(axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        panel.border = element_blank(), 
+        panel.grid = element_blank(), 
+        axis.ticks = element_blank(),
+        axis.text.x = element_blank(),
+        plot.title = element_text(hjust = 0.5, size = 14, face = "bold")) +
+  geom_text(aes(label = percentage),
+            position = position_stack(vjust = 0.5))+
+  scale_fill_manual(labels = c("High usage", "Medium usage","Low usage")) +
+  scale_fill_brewer(palette="Set1") +
+  labs(title = "Percentage of user usage")
+
+#merge_daily_data %>% 
+  #ggplot(aes(totalsteps,calories,fill=totalsteps)) +
+  #geom_boxplot() +
   #facet_wrap(~distance)+
-  labs(title="Calories burned by Steps",x=NULL) +
-  theme(legend.position="none", text = element_text(size = 20),plot.title = element_text(hjust = 0.5))
+  #labs(title="Calories burned by Steps",x=NULL) +
+  #theme(legend.position="none", text = element_text(size = 20),plot.title = element_text(hjust = 0.5))
 
 
 
